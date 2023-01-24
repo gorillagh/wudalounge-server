@@ -11,30 +11,39 @@ exports.checkEmail = async (req, res) => {
 };
 
 exports.createOrUpdateUser = async (req, res) => {
-  const { email } = req.user;
-  const { phoneNumber, name } = req.body;
+  const user = await User.findOne({
+    phoneNumber: req.user.phone_number,
+  }).exec();
 
-  console.log("Firebase userrrr------>", req.user);
-
-  const user = await User.findOneAndUpdate(
-    { email },
-    { name, phoneNumber: `+233${phoneNumber.slice(-9)}` },
-    { new: true }
-  );
-
-  if (user) {
-    console.log("USER UPDATED", user);
-    res.json(user);
-  } else {
+  if (!user) {
     const newUser = await new User({
-      email,
-      name,
-      phoneNumber: `+233${phoneNumber.slice(-9)}`,
+      phoneNumber: req.user.phone_number,
+      name: "Wd User",
     }).save();
-
-    console.log("USER CREATED", newUser);
     res.json(newUser);
+  } else {
+    res.json(user);
   }
+
+  //   const user = await User.findOneAndUpdate(
+  //     { phoneNumber: },
+  //     { name, phoneNumber: `+233${phoneNumber.slice(-9)}` },
+  //     { new: true }
+  //   );
+
+  //   if (user) {
+  //     console.log("USER UPDATED", user);
+  //     res.json(user);
+  //   } else {
+  //     const newUser = await new User({
+  //       email,
+  //       name,
+  //       phoneNumber: `+233${phoneNumber.slice(-9)}`,
+  //     }).save();
+
+  //     console.log("USER CREATED", newUser);
+  //     res.json(newUser);
+  //   }
 };
 
 exports.googleLogin = async (req, res) => {
@@ -73,9 +82,8 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.currentUser = async (req, res) => {
-  const { email } = await req.user;
   try {
-    User.findOne({ email }).exec((err, user) => {
+    User.findOne({ phoneNumber: req.user.phone_number }).exec((err, user) => {
       if (err) throw new Error(err);
       else {
         console.log("Dbuser---->", user);

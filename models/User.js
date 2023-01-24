@@ -3,6 +3,11 @@ const { ObjectId } = mongoose.Schema;
 
 const userSchema = new mongoose.Schema(
   {
+    phoneNumber: {
+      type: String,
+      required: true,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -10,16 +15,16 @@ const userSchema = new mongoose.Schema(
 
     email: {
       type: String,
-      required: true,
+      // required: true,
       index: true,
     },
     role: {
       type: String,
       default: "subscriber",
     },
-    address: String,
+    addresses: String,
     DoB: Date,
-    phoneNumber: String,
+
     Occupation: String,
   },
   { timestamps: true }
