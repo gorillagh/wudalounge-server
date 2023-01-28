@@ -6,8 +6,9 @@ const router = express.Router();
 const { authCheck, adminCheck } = require("../middlewares/auth");
 
 //Controllers
-const { addToNotificationList } = require("../controllers/user");
+const { addToNotificationList, updateUser } = require("../controllers/user");
 
 router.post("/add-to-notification-list", addToNotificationList);
+router.post("/update/:slug", updateUser);
 
 module.exports = router;

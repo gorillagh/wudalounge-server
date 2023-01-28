@@ -1,4 +1,5 @@
 const NotificationList = require("../models/NotificationList");
+const User = require("../models/User");
 
 exports.addToNotificationList = async (req, res) => {
   try {
@@ -14,6 +15,19 @@ exports.addToNotificationList = async (req, res) => {
       }).save();
       res.json("Ok");
     }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const _id = req.params.slug;
+
+    const updatedUser = await User.findOneAndUpdate({ _id }, req.body, {
+      new: true,
+    }).exec();
+    res.json(updatedUser);
   } catch (error) {
     console.log(error);
   }
