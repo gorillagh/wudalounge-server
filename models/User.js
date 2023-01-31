@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema(
     favorites: {
       type: Array,
     },
+    addresses: {
+      type: Array,
+    },
     email: {
       type: String,
       // required: true,
@@ -24,7 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "subscriber",
     },
-    addresses: String,
+
     DoB: Date,
 
     Occupation: String,
