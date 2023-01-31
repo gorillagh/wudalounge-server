@@ -12,7 +12,9 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-
+    favorites: {
+      type: Array,
+    },
     email: {
       type: String,
       // required: true,
