@@ -10,6 +10,7 @@ const app = express();
 const port = process.env.PORT || 8000;
 
 //Connect to db
+mongoose.set("strictQuery", false);
 mongoose
   .connect(process.env.DATABASE, {
     keepAlive: true,
