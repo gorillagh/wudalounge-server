@@ -54,6 +54,49 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
     const { _id, phoneNumber, addresses } = await User.findOne({
       _id: id,
     }).exec();
+
+    if (paymentMethod && paymentMethod === "cash") {
+      let total = 0;
+      let totalAfterDiscount = 0;
+      if (dishes) {
+        dishes.map((d, index) => {
+          let totalExtras = 0;
+          for (var i in d.extras) {
+            if (d.extras[i].checked)
+              totalExtras =
+                totalExtras +
+                Number(d.extras[i].additionalAmount) *
+                  Number(d.extras[i].quantity);
+          }
+
+          const subTotal =
+            Number(d.dishQuantity) *
+            (Number(d.price) +
+              Number(d.selectedSize.additionalAmount) +
+              Number(totalExtras));
+
+          total += subTotal;
+          totalAfterDiscount += subTotal - discount * subTotal;
+        });
+        if (riderTip && deliveryMode === "delivery") {
+          total += riderTip;
+          totalAfterDiscount += riderTip;
+        }
+      }
+      const newOrder = await new Order({
+        dishes,
+        orderedBy: _id,
+        address: addresses[0],
+        phoneNumber,
+        deliveryMode,
+        riderTip,
+        paymentMethod,
+        notes,
+        paymentIntent: { amount: totalAfterDiscount * 100 },
+      }).save();
+      res.json("Order placed");
+      return;
+    }
     const verifiedTransaction = await axios.get(
       `https://api.paystack.co/transaction/verify/${transaction.reference}`,
       {

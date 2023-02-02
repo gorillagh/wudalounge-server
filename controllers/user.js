@@ -38,7 +38,9 @@ exports.getOrders = async (req, res) => {
   try {
     const _id = req.params.slug;
     console.log("user id", _id);
-    const orders = await Order.find({ orderedBy: _id }).exec();
+    const orders = await Order.find({ orderedBy: _id })
+      .sort([["createdAt", "desc"]])
+      .exec();
 
     res.json(orders);
   } catch (error) {
