@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Order = require("../models/Order");
 const axios = require("axios");
 const discount = 0.5;
 
@@ -46,11 +47,12 @@ exports.createPayment = async (req, res) => {
 
 exports.verifyTransactionAndCreateOrder = async (req, res) => {
   try {
-    const _id = req.params.slug;
-    const { dishes, deliveryMode, riderTip, paymentMethod } = req.body.data;
+    const id = req.params.slug;
+    const { dishes, deliveryMode, riderTip, paymentMethod, notes } =
+      req.body.data;
     const { transaction } = req.body;
-    const { phoneNumber, addresses, name, email } = await User.findOne({
-      _id,
+    const { _id, phoneNumber, addresses } = await User.findOne({
+      _id: id,
     }).exec();
     const verifiedTransaction = await axios.get(
       `https://api.paystack.co/transaction/verify/${transaction.reference}`,
@@ -65,7 +67,18 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       verifiedTransaction &&
       verifiedTransaction.data.data.status === "success"
     ) {
-      res.json("confirmed!");
+      const newOrder = await new Order({
+        dishes,
+        orderedBy: _id,
+        address: addresses[0],
+        phoneNumber,
+        deliveryMode,
+        riderTip,
+        paymentMethod,
+        notes,
+        paymentIntent: verifiedTransaction.data.data,
+      }).save();
+      res.json("Payment Confirmed and Order Created");
     }
   } catch (error) {
     console.log(error);

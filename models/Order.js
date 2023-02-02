@@ -3,10 +3,21 @@ const { ObjectId } = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema(
   {
+    dishes: Array,
+    orderedBy: {
+      type: ObjectId,
+      ref: "User",
+    },
     address: {},
-    phone: String,
-    note: String,
-    tip: Number,
+    phoneNumber: String,
+    deliveryMode: String,
+    riderTip: Number,
+    paymentMethod: {
+      type: String,
+      default: "cashless",
+      enum: ["cashless", "cash"],
+    },
+    notes: String,
     // dishes: [
     //   {
     //     dish: {
@@ -20,19 +31,8 @@ const orderSchema = new mongoose.Schema(
     paymentIntent: {},
     orderStatus: {
       type: String,
-      default: "Not Processed",
-      enum: [
-        "Not Processed",
-        "Cash On Delivery",
-        "Processing",
-        "Dispatched",
-        "Cancelled",
-        "Completed",
-      ],
-    },
-    orderedBy: {
-      type: ObjectId,
-      ref: "User",
+      default: "processing",
+      enum: ["processing", "dispatched", "cancelled", "completed"],
     },
   },
   { timestamps: true }
