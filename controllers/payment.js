@@ -106,7 +106,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       `https://api.paystack.co/transaction/verify/${transaction.reference}`,
       {
         headers: {
-          Authorization: `Bearer ${process.env.PAYSTACk_TEST_SECRET_KEY}`,
+          Authorization: `Bearer ${process.env.PAYSTACK_TEST_SECRET_KEY}`,
         },
       }
     );
