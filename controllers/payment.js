@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Order = require("../models/Order");
 const axios = require("axios");
 const discount = 0.5;
+const { v4: uuid } = require("uuid");
 
 exports.createPayment = async (req, res) => {
   try {
@@ -92,7 +93,11 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
         riderTip,
         paymentMethod,
         notes,
-        paymentIntent: { amount: totalAfterDiscount * 100 },
+        paymentIntent: {
+          reference: uuid(),
+          amount: totalAfterDiscount * 100,
+          channel: "cash",
+        },
       }).save();
       res.json("Order placed");
       return;
