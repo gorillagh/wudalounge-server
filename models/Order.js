@@ -3,6 +3,7 @@ const { ObjectId } = mongoose.Schema;
 
 const orderSchema = new mongoose.Schema(
   {
+    reference: String,
     dishes: Array,
     orderedBy: {
       type: ObjectId,

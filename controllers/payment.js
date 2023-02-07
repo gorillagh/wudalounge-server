@@ -85,7 +85,9 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           totalAfterDiscount += riderTip;
         }
       }
+      const reference = uuid();
       const newOrder = await new Order({
+        reference,
         dishes,
         orderedBy: _id,
         address: addresses[0],
@@ -95,7 +97,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
         paymentMethod,
         notes,
         paymentIntent: {
-          reference: uuid(),
+          reference,
           amount: totalAfterDiscount * 100,
           channel: "cash",
         },
@@ -117,6 +119,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       verifiedTransaction.data.data.status === "success"
     ) {
       const newOrder = await new Order({
+        reference: verifiedTransaction.data.data.reference,
         dishes,
         orderedBy: _id,
         address: addresses[0],
@@ -146,7 +149,7 @@ exports.handleWebhook = async (req, res) => {
       const event = req.body;
       if (event.event === "charge.success") {
         const orderExists = await Order.findOne({
-          "paymentIntent.reference": event.data.reference,
+          reference: event.data.reference,
         }).exec();
 
         if (orderExists) {
@@ -162,6 +165,7 @@ exports.handleWebhook = async (req, res) => {
           const { dishes, deliveryMode, riderTip, paymentMethod, notes } =
             event.data.metadata.cart;
           const newOrder = await new Order({
+            reference: event.data.reference.toString(),
             dishes,
             orderedBy: _id,
             address: addresses[0],
