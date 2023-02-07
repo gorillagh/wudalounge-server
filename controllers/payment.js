@@ -155,9 +155,9 @@ exports.handleWebhook = async (req, res) => {
           return;
         }
         if (!orderExists) {
-          const id = req.params.slug;
-          const { _id, phoneNumber, addresses } = await User.findOne({
-            _id: id,
+          const phoneNumber = event.data.metadata.phone;
+          const { _id, addresses } = await User.findOne({
+            phoneNumber,
           }).exec();
           const { dishes, deliveryMode, riderTip, paymentMethod, notes } =
             event.data.metadata.cart;
