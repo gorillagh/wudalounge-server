@@ -138,7 +138,7 @@ exports.handleWebhook = async (req, res) => {
   try {
     //Validate event
     const hash = crypto
-      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+      .createHmac("sha512", process.env.PAYSTACK_TEST_SECRET_KEY)
       .update(JSON.stringify(req.body))
       .digest("hex");
     if (hash == req.headers["x-paystack-signature"]) {
