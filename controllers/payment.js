@@ -187,6 +187,7 @@ exports.handleWebhook = async (req, res) => {
               reference: event.data.reference.toString(),
               amount: event.data.amount,
               channel: event.data.channel,
+              createdBy: "Webhook",
             },
           }).save();
           console.log("Stack ORDER SAVED----->>", newOrder);
