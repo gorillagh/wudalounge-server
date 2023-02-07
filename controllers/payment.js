@@ -146,7 +146,7 @@ exports.handleWebhook = async (req, res) => {
       const event = req.body;
       if (event.event === "charge.success") {
         const orderExists = await Order.findOne({
-          "paymentIntent.id": event.data.reference,
+          "paymentIntent.reference": event.data.reference,
         }).exec();
 
         if (orderExists) {
