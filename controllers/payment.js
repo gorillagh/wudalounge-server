@@ -171,7 +171,7 @@ exports.handleWebhook = async (req, res) => {
             paymentMethod,
             notes,
             paymentIntent: {
-              id: event.data.reference.toString(),
+              reference: event.data.reference.toString(),
               amount: event.data.amount,
               channel: event.data.channel,
             },
