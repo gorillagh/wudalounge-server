@@ -105,6 +105,15 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       res.json("Order placed");
       return;
     }
+    const orderExists = await Order.findOne({
+      reference: transaction.reference,
+    }).exec();
+    if (orderExists) {
+      console.log("Order already exists");
+      res.json("Payment Confirmed and Order Created");
+      return;
+    }
+
     const verifiedTransaction = await axios.get(
       `https://api.paystack.co/transaction/verify/${transaction.reference}`,
       {
