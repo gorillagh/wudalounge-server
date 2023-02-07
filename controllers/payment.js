@@ -132,3 +132,61 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
     console.log(error);
   }
 };
+
+exports.handleWebhook = async (req, res) => {
+  try {
+    //Validate event
+    const hash = crypto
+      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY)
+      .update(JSON.stringify(req.body))
+      .digest("hex");
+    if (hash == req.headers["x-paystack-signature"]) {
+      // Retrieve the request's body
+      const event = req.body;
+      if (event.event === "charge.success") {
+        const orderExists = await Order.findOne({
+          "paymentIntent.id": event.data.reference,
+        }).exec();
+
+        if (orderExists) {
+          console.log("Order Exists(from webhook)-------->", orderExists);
+          res.send(200);
+          return;
+        }
+        if (!orderExists) {
+          const id = req.params.slug;
+          const { _id, phoneNumber, addresses } = await User.findOne({
+            _id: id,
+          }).exec();
+          const { dishes, deliveryMode, riderTip, paymentMethod, notes } =
+            event.data.metadata.cart;
+          const newOrder = await new Order({
+            dishes,
+            orderedBy: _id,
+            address: addresses[0],
+            phoneNumber,
+            deliveryMode,
+            riderTip,
+            paymentMethod,
+            notes,
+            paymentIntent: {
+              id: event.data.reference.toString(),
+              amount: event.data.amount,
+              channel: event.data.channel,
+            },
+          }).save();
+          console.log("Stack ORDER SAVED----->>", newOrder);
+          res.send(200);
+        } else {
+          res.json({ ok: false });
+        }
+      } else {
+        res.json({ ok: false });
+      }
+    } else {
+      res.json({ ok: false });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
