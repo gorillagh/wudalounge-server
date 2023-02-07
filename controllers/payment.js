@@ -3,6 +3,7 @@ const Order = require("../models/Order");
 const axios = require("axios");
 const discount = 0.5;
 const { v4: uuid } = require("uuid");
+const crypto = require("crypto");
 
 exports.createPayment = async (req, res) => {
   try {
