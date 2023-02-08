@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema(
       // required: true,
       index: true,
     },
+    image: String,
     role: {
       type: String,
       default: "subscriber",
