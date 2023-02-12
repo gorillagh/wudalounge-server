@@ -18,7 +18,7 @@ exports.createOrUpdateUser = async (req, res) => {
   if (!user) {
     const newUser = await new User({
       phoneNumber: req.user.phone_number,
-      name: "User",
+      name: "Customer",
     }).save();
     res.json(newUser);
   } else {
