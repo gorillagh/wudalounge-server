@@ -101,11 +101,7 @@ const sendSMS = async (phoneNumber, total, reference) => {
     }
   );
   const adminResponse = await axios.post(
-    `http://app.splitsms.com/smsapi?key=${
-      process.env.SPLITSMS_API_KEY
-    }&to=0${phoneNumber.slice(
-      -9
-    )}&msg=Order received total: GHC${total}. Id: ${reference} from: ${phoneNumber}&sender_id=Wuda Lounge`,
+    `http://app.splitsms.com/smsapi?key=${process.env.SPLITSMS_API_KEY}&to=0240298910&msg=Order received total: GHC${total}. Id: ${reference} from: ${phoneNumber}&sender_id=Wuda Lounge`,
     {
       headers: {
         "content-type": "application/x-www-form-urlencoded",
