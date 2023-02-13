@@ -4,6 +4,12 @@ const axios = require("axios");
 const discount = 0.5;
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
+const { Vonage } = require("@vonage/server-sdk");
+
+const vonage = new Vonage({
+  apiKey: process.env.VONAGE_API_KEY,
+  apiSecret: process.env.VONAGE_API_SECRET,
+});
 
 exports.createPayment = async (req, res) => {
   try {
@@ -47,6 +53,77 @@ exports.createPayment = async (req, res) => {
   }
 };
 
+///////Send SMS to customer /////
+// const sendSMS = async (phoneNumber, total, orderId) => {
+//   const from = "Wuda Lounge";
+//   // const to = "233240298910";
+//   const to = phoneNumber;
+//   const text = `Order successful. total: GHC${total}. Order Id: ${orderId} Thanks for choosing Wuda Lounge`;
+//   await vonage.sms
+//     .send({ to, from, text })
+//     .then((resp) => {
+//       console.log("Message sent successfully");
+//       console.log(resp);
+//     })
+//     .catch((err) => {
+//       console.log("There was an error sending the messages.");
+//       console.error(err);
+//     });
+// };
+
+///////Send SMS to admin//////
+// const sendAdminSMS = async (phoneNumber, total, orderId) => {
+//   const from = "Wuda Lounge";
+//   const to = "233240298910";
+//   const text = `Order received total: GHC${total}. Id: ${orderId} from: ${phoneNumber}`;
+//   await vonage.sms
+//     .send({ to, from, text })
+//     .then((resp) => {
+//       console.log("Message sent successfully");
+//       console.log(resp);
+//     })
+//     .catch((err) => {
+//       console.log("There was an error sending the messages.");
+//       console.error(err);
+//     });
+// };
+const sendSMS = async (phoneNumber, total, reference) => {
+  const userResponse = await axios.post(
+    `http://app.splitsms.com/smsapi?key=${
+      process.env.SPLITSMS_API_KEY
+    }&to=0${phoneNumber.slice(
+      -9
+    )}&msg=Order successful. total: GHC${total}. Order Id: ${reference}. Please go to your dashboard to view order details. Thanks for choosing Wuda Lounge&sender_id=Wuda Lounge`,
+    {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+  const adminResponse = await axios.post(
+    `http://app.splitsms.com/smsapi?key=${
+      process.env.SPLITSMS_API_KEY
+    }&to=0${phoneNumber.slice(
+      -9
+    )}&msg=Order received total: GHC${total}. Id: ${reference} from: ${phoneNumber}&sender_id=Wuda Lounge`,
+    {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded",
+      },
+    }
+  );
+
+  console.log(
+    "Sent to user response====>",
+    userResponse.data,
+    userResponse.status
+  );
+  console.log(
+    "Sent to admin response====>",
+    adminResponse.data,
+    adminResponse.status
+  );
+};
 exports.verifyTransactionAndCreateOrder = async (req, res) => {
   try {
     const id = req.params.slug;
@@ -102,6 +179,14 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
+      ////(splitsms)//////
+      sendSMS(
+        `0${phoneNumber.slice(-9)}`,
+        totalAfterDiscount,
+        reference.slice(-9)
+      );
+
+      ////////////////////////////
       res.json("Order placed");
       return;
     }
@@ -139,6 +224,13 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
         notes,
         paymentIntent: verifiedTransaction.data.data,
       }).save();
+
+      ////(splitsms)//////
+      sendSMS(
+        `0${phoneNumber.slice(-9)}`,
+        verifiedTransaction.data.data.amount / 100,
+        verifiedTransaction.data.data.reference.slice(-9)
+      );
       res.json("Payment Confirmed and Order Created");
     }
   } catch (error) {
@@ -192,6 +284,11 @@ exports.handleWebhook = async (req, res) => {
             },
           }).save();
           console.log("Stack ORDER SAVED----->>", newOrder);
+          sendSMS(
+            `0${phoneNumber.slice(-9)}`,
+            event.data.amount / 100,
+            event.data.reference.slice(-9)
+          );
           res.send(200);
         } else {
           res.json({ ok: false });
