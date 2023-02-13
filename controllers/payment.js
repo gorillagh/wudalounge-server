@@ -16,6 +16,7 @@ exports.createPayment = async (req, res) => {
     let total = 0;
     let totalAfterDiscount = 0;
     const _id = req.params.slug;
+    console.log("user Id ", _id);
     const { dishes, deliveryMode, riderTip, paymentMethod } = req.body;
     const { phoneNumber, addresses, name, email } = await User.findOne({
       _id,
