@@ -145,7 +145,7 @@ const sendSMS = async (phoneNumber, total, reference) => {
     schedule_date: "",
   };
   const headers = {
-    "content-type": "application/x-www-form-urlencoded",
+    // "content-type": "application/x-www-form-urlencoded",
     Accept: "application/json",
   };
 
@@ -236,10 +236,8 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
-      ////(splitsms)//////
       sendSMS(phoneNumber, totalAfterDiscount, reference);
 
-      ////////////////////////////
       res.json("Order placed");
       return;
     }
