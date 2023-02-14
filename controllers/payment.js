@@ -90,94 +90,96 @@ exports.createPayment = async (req, res) => {
 // };
 
 //////SPLIT SMS///////////////////////////
-const sendSMS = async (phoneNumber, total, reference) => {
-  const userResponse = await axios.post(
-    ` https://apps.mnotify.net/smsapi?key=EQsvVRXacMvClllzVoRnJitTv&to=0${phoneNumber.slice(
-      -9
-    )}&msg=Ordersuccessful&sender_id=WudaLounge`,
-    {
-      headers: {
-        "content-type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-  const adminResponse = await axios.post(
-    `https://apps.mnotify.net/smsapi?key=EQsvVRXacMvClllzVoRnJitTv&to=0240298910&msg=Orderreceived&sender_id=WudaLounge`,
-    {
-      headers: {
-        "content-type": "application/x-www-form-urlencoded",
-      },
-    }
-  );
-
-  console.log(
-    "Sent to user response====>",
-    userResponse.data,
-    userResponse.status
-  );
-  console.log(
-    "Sent to admin response====>",
-    adminResponse.data,
-    adminResponse.status
-  );
-};
-
 // const sendSMS = async (phoneNumber, total, reference) => {
-//   const customerData = {
-//     recipient: [`0${phoneNumber.slice(-9)}`],
-//     sender: "Wuda Lounge",
-//     message: `Order successful! Amount: GHC${total}. Order Id: ${reference.slice(
+//   const userResponse = await axios.post(
+//     `http://app.splitsms.com/smsapi?key=${
+//       process.env.SPLITSMS_API_KEY
+//     }&to=0${phoneNumber.slice(
 //       -9
-//     )}. Please go to your dashboard to see order details. Thanks for choosing Wuda Lounge.`,
+//     )}&msg=Order successful. total: GHC${total}. Order Id: ${reference}. Please go to your dashboard to view order details. Thanks for choosing Wuda Lounge&sender_id=Wuda Lounge`,
+//     {
+//       headers: {
+//         "content-type": "application/x-www-form-urlencoded",
+//       },
+//     }
+//   );
+//   const adminResponse = await axios.post(
+//     `http://app.splitsms.com/smsapi?key=${process.env.SPLITSMS_API_KEY}&to=0240298910&msg=Order received total: GHC${total}. Id: ${reference} from: ${phoneNumber}&sender_id=Wuda Lounge`,
+//     {
+//       headers: {
+//         "content-type": "application/x-www-form-urlencoded",
+//       },
+//     }
+//   );
 
-//     is_schedule: "false",
-//     schedule_date: "",
-//   };
-//   const adminData = {
-//     recipient: ["0240298910"],
-//     sender: "WudaLounge",
-//     message: `New order received from 0${phoneNumber.slice(
-//       -9
-//     )}, Id:${reference.slice(-9)}, total:${total}`,
-//     is_schedule: "false",
-//     schedule_date: "",
-//   };
-//   const headers = {
-//     "content-type": "application/x-www-form-urlencoded",
-//     Accept: "application/json",
-//   };
-
-//   try {
-//     ///send to customer
-//     const customerResponse = await axios.post(
-//       `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
-//       customerData,
-//       {
-//         headers,
-//       }
-//     );
-//     ///Send to admin
-//     const adminResponse = await axios.post(
-//       `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
-//       adminData,
-//       {
-//         headers,
-//       }
-//     );
-//     console.log(
-//       "Sent to user response====>",
-//       customerResponse.data,
-//       customerResponse.data
-//     );
-//     console.log(
-//       "Sent to admin response====>",
-//       adminResponse.data,
-//       adminResponse.data
-//     );
-//   } catch (error) {
-//     console.log(error);
-//   }
+//   console.log(
+//     "Sent to user response====>",
+//     userResponse.data,
+//     userResponse.status
+//   );
+//   console.log(
+//     "Sent to admin response====>",
+//     adminResponse.data,
+//     adminResponse.status
+//   );
 // };
+
+const sendSMS = async (phoneNumber, total, reference) => {
+  const customerData = {
+    recipient: [`0${phoneNumber.slice(-9)}`],
+    sender: "Wudalounge",
+    message: `Order successful! Amount: GHC${total}. Order Id: ${reference.slice(
+      -9
+    )}. Please go to your dashboard to see order details. Thanks for choosing Wuda Lounge.`,
+
+    is_schedule: "false",
+    schedule_date: "",
+  };
+  const adminData = {
+    recipient: ["0240298910"],
+    sender: "Wudalounge",
+    message: `New order received from 0${phoneNumber.slice(
+      -9
+    )}, Id:${reference.slice(-9)}, total:${total}`,
+    is_schedule: "false",
+    schedule_date: "",
+  };
+  const headers = {
+    "content-type": "application/x-www-form-urlencoded",
+    Accept: "application/json",
+  };
+
+  try {
+    ///send to customer
+    const customerResponse = await axios.post(
+      `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
+      customerData,
+      {
+        headers,
+      }
+    );
+    ///Send to admin
+    const adminResponse = await axios.post(
+      `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
+      adminData,
+      {
+        headers,
+      }
+    );
+    console.log(
+      "Sent to user response====>",
+      customerResponse.data,
+      customerResponse.data
+    );
+    console.log(
+      "Sent to admin response====>",
+      adminResponse.data,
+      adminResponse.data
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 exports.verifyTransactionAndCreateOrder = async (req, res) => {
   try {
