@@ -236,7 +236,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
-      sendSMS(phoneNumber, totalAfterDiscount, reference);
+      await sendSMS(phoneNumber, totalAfterDiscount, reference);
 
       res.json("Order placed");
       return;
