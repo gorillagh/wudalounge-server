@@ -277,7 +277,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       }).save();
 
       ////(splitsms)//////
-      sendSMS(
+      await sendSMS(
         phoneNumber,
         verifiedTransaction.data.data.amount / 100,
         verifiedTransaction.data.data.reference
@@ -335,7 +335,11 @@ exports.handleWebhook = async (req, res) => {
             },
           }).save();
           console.log("Stack ORDER SAVED----->>", newOrder);
-          sendSMS(phoneNumber, event.data.amount / 100, event.data.reference);
+          await sendSMS(
+            phoneNumber,
+            event.data.amount / 100,
+            event.data.reference
+          );
           res.send(200);
         } else {
           res.json({ ok: false });
