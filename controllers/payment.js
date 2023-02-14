@@ -140,7 +140,7 @@ const sendSMS = async (phoneNumber, total, reference) => {
     sender: "Wudalounge",
     message: `New order received from 0${phoneNumber.slice(
       -9
-    )}, Id:${reference.slice(-9)}, total:${total}`,
+    )}, Id: ${reference.slice(-9)}, total: GHC${total}`,
     is_schedule: "false",
     schedule_date: "",
   };
