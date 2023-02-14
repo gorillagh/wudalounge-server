@@ -94,9 +94,7 @@ const sendSMS = async (phoneNumber, total, reference) => {
   const userResponse = await axios.post(
     ` https://apps.mnotify.net/smsapi?key=EQsvVRXacMvClllzVoRnJitTv&to=0${phoneNumber.slice(
       -9
-    )}&msg=Order successful. total: GHC${total}. Order Id: ${reference.slice(
-      -9
-    )}. Please go to your dashboard to view order details. Thanks for choosing Wuda Lounge&sender_id=Wuda Lounge`,
+    )}&msg=Ordersuccessful&sender_id=WudaLounge`,
     {
       headers: {
         "content-type": "application/x-www-form-urlencoded",
@@ -104,9 +102,7 @@ const sendSMS = async (phoneNumber, total, reference) => {
     }
   );
   const adminResponse = await axios.post(
-    `https://apps.mnotify.net/smsapi?key=EQsvVRXacMvClllzVoRnJitTv&to=0240298910&msg=Order received total: GHC${total}. Id: ${reference.slice(
-      -9
-    )} from: 0${phoneNumber.slice(-9)}&sender_id=Wuda Lounge`,
+    `https://apps.mnotify.net/smsapi?key=EQsvVRXacMvClllzVoRnJitTv&to=0240298910&msg=Orderreceived&sender_id=WudaLounge`,
     {
       headers: {
         "content-type": "application/x-www-form-urlencoded",
