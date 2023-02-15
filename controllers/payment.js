@@ -124,7 +124,7 @@ exports.createPayment = async (req, res) => {
 //   );
 // };
 
-const sendSMS = async (phoneNumber, total, reference) => {
+const sendSMS = async (phoneNumber, total, reference, paymentMethod) => {
   const customerData = {
     recipient: [`0${phoneNumber.slice(-9)}`],
     sender: "Wudalounge",
@@ -140,7 +140,9 @@ const sendSMS = async (phoneNumber, total, reference) => {
     sender: "Wudalounge",
     message: `New order received from 0${phoneNumber.slice(
       -9
-    )}, Id: ${reference.slice(-9)}, total: GHC${total}`,
+    )}, Id: ${reference.slice(
+      -9
+    )}, total: GHC${total}, payment method: ${paymentMethod}`,
     is_schedule: "false",
     schedule_date: "",
   };
@@ -236,7 +238,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
-      await sendSMS(phoneNumber, totalAfterDiscount, reference);
+      await sendSMS(phoneNumber, totalAfterDiscount, reference, paymentMethod);
 
       res.json("Order placed");
       return;
@@ -280,7 +282,8 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
       await sendSMS(
         phoneNumber,
         verifiedTransaction.data.data.amount / 100,
-        verifiedTransaction.data.data.reference
+        verifiedTransaction.data.data.reference,
+        paymentMethod
       );
       res.json("Payment Confirmed and Order Created");
     }
@@ -338,7 +341,8 @@ exports.handleWebhook = async (req, res) => {
           await sendSMS(
             phoneNumber,
             event.data.amount / 100,
-            event.data.reference
+            event.data.reference,
+            paymentMethod
           );
           res.send(200);
         } else {
