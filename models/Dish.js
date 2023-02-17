@@ -11,18 +11,6 @@ const dishSchema = new Schema(
       maxlength: 70,
       text: true,
     },
-    category: {
-      type: ObjectId,
-      ref: "Category",
-      text: true,
-    },
-    subcategories: [
-      {
-        type: ObjectId,
-        ref: "SubCategory",
-        text: true,
-      },
-    ],
     description: {
       type: String,
       required: true,
@@ -34,8 +22,41 @@ const dishSchema = new Schema(
       trim: true,
       maxlength: 32,
     },
+    category: {
+      type: ObjectId,
+      ref: "Category",
+    },
+
+    subcategories: [
+      {
+        type: ObjectId,
+        ref: "SubCategory",
+      },
+    ],
+    ingredients: {
+      type: [String],
+      // required: true,
+    },
+    sizes: [
+      {
+        size: String,
+        additionalAmount: Number,
+        description: String,
+      },
+    ],
+    extras: [
+      {
+        type: ObjectId,
+        ref: "ExtraItem",
+      },
+    ],
+
     image: {
       type: String,
+    },
+    isAvailable: {
+      Type: Boolean,
+      default: true,
     },
     slug: {
       type: String,
