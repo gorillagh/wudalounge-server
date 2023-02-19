@@ -3,6 +3,10 @@ const User = require("../models/User");
 
 exports.authCheck = async (req, res, next) => {
   try {
+    // await admin.auth().updateUser("TAtQEqAAz4SNdOcuq74YErJ5EK73", {
+    //   email: "governornarh@gmail.com",
+    //   password: "@Incredible.1",
+    // });
     const firebaseUser = await admin
       .auth()
       .verifyIdToken(req.headers.authtoken);
@@ -21,7 +25,10 @@ exports.authCheck = async (req, res, next) => {
 exports.adminCheck = async (req, res, next) => {
   try {
     const { email } = await req.user;
+    console.log(email);
     const adminUser = await User.findOne({ email }).exec();
+    console.log("Admin===>", adminUser);
+
     if (adminUser.role === "admin") {
       next();
     } else {

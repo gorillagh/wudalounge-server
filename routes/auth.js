@@ -9,6 +9,7 @@ const { authCheck, adminCheck } = require("../middlewares/auth");
 const {
   createOrUpdateUser,
   currentUser,
+  currentAdmin,
   loginUser,
   checkEmail,
   updateUser,
@@ -20,7 +21,7 @@ router.post("/create-or-update-user", authCheck, createOrUpdateUser);
 router.post("/login-user", authCheck, loginUser);
 router.post("/google-login", authCheck, googleLogin);
 router.post("/current-user", authCheck, currentUser);
-router.post("/current-admin", authCheck, adminCheck, currentUser);
+router.post("/current-admin", authCheck, adminCheck, currentAdmin);
 router.post("/update-user/:slug", authCheck, updateUser);
 
 module.exports = router;

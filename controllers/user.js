@@ -3,6 +3,16 @@ const User = require("../models/User");
 const Order = require("../models/Order");
 const cloudinary = require("cloudinary").v2;
 
+exports.getUser = async (req, res) => {
+  try {
+    const _id = req.params.slug;
+    const user = await User.findOne({ _id }).exec();
+    res.json(user);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.addToNotificationList = async (req, res) => {
   try {
     const { email } = req.body;
