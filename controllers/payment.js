@@ -4,22 +4,15 @@ const axios = require("axios");
 const discount = 0.5;
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
-const { Vonage } = require("@vonage/server-sdk");
-
-const vonage = new Vonage({
-  apiKey: process.env.VONAGE_API_KEY,
-  apiSecret: process.env.VONAGE_API_SECRET,
-});
 
 exports.createPayment = async (req, res) => {
   try {
     let total = 0;
     let totalAfterDiscount = 0;
-    const _id = req.params.slug;
-    console.log("user Id ", _id);
+
     const { dishes, deliveryMode, riderTip, paymentMethod } = req.body;
     const { phoneNumber, addresses, name, email } = await User.findOne({
-      _id,
+      phoneNumber: req.user.phone_number,
     }).exec();
 
     if (dishes) {
@@ -185,12 +178,11 @@ const sendSMS = async (phoneNumber, total, reference, paymentMethod) => {
 
 exports.verifyTransactionAndCreateOrder = async (req, res) => {
   try {
-    const id = req.params.slug;
     const { dishes, deliveryMode, riderTip, paymentMethod, notes } =
       req.body.data;
     const { transaction } = req.body;
     const { _id, phoneNumber, addresses } = await User.findOne({
-      _id: id,
+      phoneNumber: req.user.phone_number,
     }).exec();
 
     if (paymentMethod && paymentMethod === "cash") {

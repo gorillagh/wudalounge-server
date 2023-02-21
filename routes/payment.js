@@ -12,8 +12,8 @@ const {
   handleWebhook,
 } = require("../controllers/payment");
 
-router.post("/create-payment/:slug", createPayment);
-router.post("/verify-transaction/:slug", verifyTransactionAndCreateOrder);
+router.post("/create-payment", authCheck, createPayment);
+router.post("/verify-transaction", authCheck, verifyTransactionAndCreateOrder);
 router.post("/paystack-webhook", handleWebhook);
 
 module.exports = router;

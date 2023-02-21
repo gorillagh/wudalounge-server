@@ -5,9 +5,13 @@ const cloudinary = require("cloudinary").v2;
 
 exports.getUser = async (req, res) => {
   try {
-    const _id = req.params.slug;
-    const user = await User.findOne({ _id }).exec();
-    res.json(user);
+    User.findOne({ phoneNumber: req.user.phone_number }).exec((err, user) => {
+      if (err) throw new Error(err);
+      else {
+        console.log("Dbuser---->", user);
+        res.json(user);
+      }
+    });
   } catch (error) {
     console.log(error);
   }
@@ -34,11 +38,13 @@ exports.addToNotificationList = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    const _id = req.params.slug;
-
-    const updatedUser = await User.findOneAndUpdate({ _id }, req.body, {
-      new: true,
-    }).exec();
+    const updatedUser = await User.findOneAndUpdate(
+      { phoneNumber: req.user.phone_number },
+      req.body,
+      {
+        new: true,
+      }
+    ).exec();
     res.json(updatedUser);
   } catch (error) {
     console.log(error);
@@ -47,9 +53,10 @@ exports.updateUser = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const _id = req.params.slug;
-    console.log("user id", _id);
-    const orders = await Order.find({ orderedBy: _id })
+    const user = await User.findOne({
+      phoneNumber: req.user.phone_number,
+    }).exec();
+    const orders = await Order.find({ orderedBy: user })
       .sort([["createdAt", "desc"]])
       .exec();
 
@@ -68,8 +75,11 @@ cloudinary.config({
 
 exports.uploadImage = async (req, res) => {
   try {
+    const user = await User.findOne({
+      phoneNumber: req.user.phone_number,
+    }).exec();
     const result = await cloudinary.uploader.upload(req.body.uri, {
-      public_id: `${req.params.slug}`,
+      public_id: user._id,
       resource_type: "auto",
     });
     res.json({ public_id: result.public_id, url: result.secure_url });

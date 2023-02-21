@@ -14,10 +14,10 @@ const {
   uploadImage,
 } = require("../controllers/user");
 
-router.get("/get-user/:slug", getUser);
+router.post("/get-user", authCheck, getUser);
 router.post("/add-to-notification-list", addToNotificationList);
-router.post("/update/:slug", updateUser);
-router.get("/get-orders/:slug", getOrders);
-router.post("/upload-image/:slug", uploadImage);
+router.post("/update", authCheck, updateUser);
+router.post("/get-orders", authCheck, getOrders);
+router.post("/upload-image", authCheck, uploadImage);
 
 module.exports = router;
