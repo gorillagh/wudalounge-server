@@ -54,10 +54,10 @@ const dishSchema = new Schema(
     image: {
       type: String,
     },
-    isAvailable: {
-      Type: Boolean,
-      default: true,
-    },
+    // isAvailable: {
+    //   Type: Boolean,
+    //   default: true,
+    // },
     slug: {
       type: String,
       unique: true,

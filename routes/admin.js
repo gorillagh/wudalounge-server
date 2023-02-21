@@ -6,8 +6,14 @@ const router = express.Router();
 const { authCheck, adminCheck } = require("../middlewares/auth");
 
 //Controllers
-const { getOrders } = require("../controllers/admin");
+const { getOrders, getDashboardBriefs } = require("../controllers/admin");
 
 router.post("/admin/orders", authCheck, adminCheck, getOrders);
+router.post(
+  "/admin/dashboard-briefs",
+  authCheck,
+  adminCheck,
+  getDashboardBriefs
+);
 
 module.exports = router;
