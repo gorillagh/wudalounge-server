@@ -47,7 +47,7 @@ const dishSchema = new Schema(
     extras: [
       {
         type: ObjectId,
-        ref: "ExtraItem",
+        ref: "Item",
       },
     ],
 

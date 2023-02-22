@@ -1,6 +1,6 @@
 const { Schema, model } = require("mongoose");
 
-const ExtraItemSchema = new Schema(
+const ItemSchema = new Schema(
   {
     name: {
       type: String,
@@ -16,6 +16,6 @@ const ExtraItemSchema = new Schema(
   },
   { timestamps: true }
 );
-ExtraItemSchema.index({ "$**": "text" });
+ItemSchema.index({ "$**": "text" });
 
-module.exports = model("ExtraItem", ExtraItemSchema);
+module.exports = model("Item", ItemSchema);
