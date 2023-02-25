@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
 const { ObjectId } = Schema;
 
-const dishSchema = new Schema(
+const drinkSchema = new Schema(
   {
     image: {
       type: String,
@@ -56,13 +56,6 @@ const dishSchema = new Schema(
         description: String,
       },
     ],
-    extras: [
-      {
-        type: ObjectId,
-        ref: "Item",
-      },
-    ],
-
     // isAvailable: {
     //   Type: Boolean,
     //   default: true,
@@ -80,6 +73,6 @@ const dishSchema = new Schema(
   },
   { timestamps: true }
 );
-dishSchema.index({ "$**": "text" });
+drinkSchema.index({ "$**": "text" });
 
-module.exports = model("Dish", dishSchema);
+module.exports = model("Drink", drinkSchema);

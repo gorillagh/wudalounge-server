@@ -10,6 +10,8 @@ const {
   getOrders,
   getDashboardBriefs,
   uploadDishImage,
+  createMenu,
+  getDishSubs,
 } = require("../controllers/admin");
 
 router.post("/admin/orders", authCheck, adminCheck, getOrders);
@@ -20,5 +22,7 @@ router.post(
   getDashboardBriefs
 );
 router.post("/admin/upload-dish-image", authCheck, adminCheck, uploadDishImage);
+router.post("/admin/create-menu", authCheck, adminCheck, createMenu);
+router.post("/admin/get-dish-subs", authCheck, adminCheck, getDishSubs);
 
 module.exports = router;

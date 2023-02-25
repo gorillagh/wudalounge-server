@@ -17,7 +17,7 @@ const subCategorySchema = new Schema(
       lowercase: true,
       index: true,
     },
-    parent: { type: ObjectId, ref: "Category", required: true },
+    // parent: { type: ObjectId, ref: "Category", required: true },
   },
   { timestamps: true }
 );

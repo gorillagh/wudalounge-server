@@ -10,6 +10,12 @@ const ItemSchema = new Schema(
       maxLength: [35, "Too long"],
       text: true,
     },
+    slug: {
+      type: String,
+      unique: true,
+      lowercase: true,
+      index: true,
+    },
     additionalAmount: Number,
     checked: { type: Boolean, default: false },
     quantity: { type: Number, default: 1 },

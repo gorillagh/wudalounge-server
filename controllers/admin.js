@@ -1,7 +1,13 @@
 const User = require("../models/User");
 const Order = require("../models/Order");
 const Dish = require("../models/Dish");
+const Drink = require("../models/Drink");
+const Item = require("../models/Item");
+const Category = require("../models/Category");
+const Subcategory = require("../models/SubCategory");
 const { v4: uuid } = require("uuid");
+const cloudinary = require("cloudinary").v2;
+const slugify = require("slugify");
 
 const currency = require("currency.js");
 
@@ -89,6 +95,13 @@ exports.getDashboardBriefs = async (req, res) => {
   }
 };
 
+//Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 exports.uploadDishImage = async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.body.uri, {
@@ -96,6 +109,57 @@ exports.uploadDishImage = async (req, res) => {
       resource_type: "auto",
     });
     res.json({ public_id: result.public_id, url: result.secure_url });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.createMenu = async (req, res) => {
+  try {
+    const slug = await slugify(req.body.data.name);
+    req.body.data.slug = await slug;
+    console.log("new body--->", req.body.data);
+    if (req.body.type === "item") {
+      await new Item(req.body.data).save();
+      res.json("ok");
+      return;
+    }
+    if (req.body.type === "subcategory") {
+      await new Subcategory(req.body.data).save();
+      res.json("ok");
+      return;
+    }
+    if (req.body.type === "category") {
+      await new Category(req.body.data).save();
+      res.json("ok");
+      return;
+    }
+    if (req.body.type === "dish") {
+      await new Dish(req.body.data).save();
+      res.json("ok");
+      return;
+    }
+    if (req.body.type === "drink") {
+      await new Drink(req.body.data).save();
+      res.json("ok");
+      return;
+    }
+  } catch (error) {
+    console.log(error);
+    if (error.code === 11000) {
+      res.json({ error: { message: "Name already used" } });
+    } else {
+      res.json({ error: { message: error.message } });
+    }
+  }
+};
+
+exports.getDishSubs = async (req, res) => {
+  try {
+    const items = await Item.find().exec();
+    const categories = await Category.find().exec();
+    const subcategories = await Subcategory.find().exec();
+    res.json({ categories, items, subcategories });
   } catch (error) {
     console.log(error);
   }
