@@ -33,11 +33,11 @@ const drinkSchema = new Schema(
       trim: true,
       maxlength: 32,
     },
-    category: {
-      type: ObjectId,
-      ref: "Category",
-      required: true,
-    },
+    // category: {
+    //   type: ObjectId,
+    //   ref: "Category",
+    //   required: true,
+    // },
 
     subcategories: [
       {

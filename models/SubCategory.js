@@ -17,7 +17,7 @@ const subCategorySchema = new Schema(
       lowercase: true,
       index: true,
     },
-    // parent: { type: ObjectId, ref: "Category", required: true },
+    type: { type: String, enum: ["food", "drink"], required: true },
   },
   { timestamps: true }
 );

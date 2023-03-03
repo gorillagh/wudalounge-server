@@ -11,14 +11,6 @@ const slugify = require("slugify");
 
 const currency = require("currency.js");
 
-exports.getOrders = async (req, res) => {
-  try {
-    //
-  } catch (error) {
-    console.log("Error getting order---->", error);
-  }
-};
-
 exports.getDashboardBriefs = async (req, res) => {
   try {
     const todayStart = new Date();
@@ -73,7 +65,7 @@ exports.getDashboardBriefs = async (req, res) => {
     const staffTotal = await User.countDocuments({ role: "staff" }).exec();
     const adminsTotal = await User.countDocuments({ role: "admin" }).exec();
     const dishesTotal = await Dish.countDocuments().exec();
-
+    const drinksTotal = await Drink.countDocuments().exec();
     // const todayReports = await Report.countDocuments().exec()
     res.json({
       ordersInfo: {
@@ -85,7 +77,7 @@ exports.getDashboardBriefs = async (req, res) => {
         uncompletedNumber,
       },
       usersInfo: { customersTotal, staffTotal, adminsTotal },
-      menuInfo: { dishesTotal },
+      menuInfo: { dishesTotal, drinksTotal },
       // reportsInfo:{todayReports}
     });
   } catch (error) {
@@ -160,6 +152,18 @@ exports.getDishSubs = async (req, res) => {
     const categories = await Category.find().exec();
     const subcategories = await Subcategory.find().exec();
     res.json({ categories, items, subcategories });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .populate("orderedBy")
+      .sort([["createdAt", "desc"]])
+      .exec();
+    res.json(orders);
   } catch (error) {
     console.log(error);
   }
