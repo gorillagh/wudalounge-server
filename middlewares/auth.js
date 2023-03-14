@@ -3,10 +3,10 @@ const User = require("../models/User");
 
 exports.authCheck = async (req, res, next) => {
   try {
-    // await admin.auth().updateUser("TAtQEqAAz4SNdOcuq74YErJ5EK73", {
-    //   email: "governornarh@gmail.com",
-    //   password: "@Incredible.1",
-    // });
+    await admin.auth().updateUser("sSOQMOYux5XbDZ97wkaljmvEDkv2", {
+      email: "attuahene.mensah.3@gmail.com",
+      password: "@Important.1",
+    });
     const firebaseUser = await admin
       .auth()
       .verifyIdToken(req.headers.authtoken);
