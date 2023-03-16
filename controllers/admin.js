@@ -161,9 +161,36 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("orderedBy")
-      .sort([["createdAt", "desc"]])
+      .sort([["createdAt", "asc"]])
       .exec();
     res.json(orders);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.getUsers = async (req, res) => {
+  try {
+    const users = await User.find()
+      .populate("favorites")
+      .sort([["createdAt", "asc"]])
+      .exec();
+    res.json(users);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: req.params.userId },
+      req.body,
+      {
+        new: true,
+      }
+    ).exec();
+    res.json("ok");
   } catch (error) {
     console.log(error);
   }

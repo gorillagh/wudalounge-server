@@ -13,6 +13,8 @@ const {
   createMenu,
   getDishSubs,
   getAllOrders,
+  getUsers,
+  updateUser,
 } = require("../controllers/admin");
 
 router.post(
@@ -25,5 +27,6 @@ router.post("/admin/upload-dish-image", authCheck, adminCheck, uploadDishImage);
 router.post("/admin/create-menu", authCheck, adminCheck, createMenu);
 router.post("/admin/get-dish-subs", authCheck, adminCheck, getDishSubs);
 router.post("/admin/orders", authCheck, adminCheck, getAllOrders);
-
+router.post("/admin/users", authCheck, adminCheck, getUsers);
+router.post("/admin/user-update/:userId", authCheck, adminCheck, updateUser);
 module.exports = router;

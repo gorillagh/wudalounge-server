@@ -12,9 +12,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    favorites: {
-      type: Array,
-    },
+    favorites: [
+      {
+        type: ObjectId,
+        ref: "Dish",
+      },
+    ],
     addresses: {
       type: Array,
     },
