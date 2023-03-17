@@ -11,6 +11,8 @@ const slugify = require("slugify");
 
 const currency = require("currency.js");
 
+const moment = require("moment");
+
 exports.getDashboardBriefs = async (req, res) => {
   try {
     const todayStart = new Date();
@@ -67,6 +69,101 @@ exports.getDashboardBriefs = async (req, res) => {
     const dishesTotal = await Dish.countDocuments().exec();
     const drinksTotal = await Drink.countDocuments().exec();
     // const todayReports = await Report.countDocuments().exec()
+
+    //Get order chart info///////
+
+    // const startOfCurrentWeek = moment().startOf("week").toDate();
+    // const endOfCurrentWeek = moment().endOf("week").toDate();
+    const startOfPastSevenDays = moment()
+      .subtract(7, "days")
+      .startOf("day")
+      .toDate();
+    const endOfToday = moment().endOf("day").toDate();
+    let weeklyOrderChart = [];
+    const results = await Order.aggregate([
+      // Match orders within the current week
+      {
+        $match: {
+          createdAt: {
+            $gte: startOfPastSevenDays,
+            $lte: endOfToday,
+          },
+        },
+      },
+      // Group orders by date and count the total number of orders for each day
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            day: { $dayOfMonth: "$createdAt" },
+          },
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$paymentIntent.amount" },
+        },
+      },
+      // Project the results to include only the date and count fields
+      {
+        $project: {
+          _id: 0,
+          date: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: {
+                $dateFromParts: {
+                  year: "$_id.year",
+                  month: "$_id.month",
+                  day: "$_id.day",
+                },
+              },
+            },
+          },
+          count: 1,
+          totalAmount: {
+            $divide: ["$totalAmount", 100],
+          },
+        },
+      },
+      // Round totalAmount to 2 decimal places
+      // {
+      //   $project: {
+      //     date: 1,
+      //     count: 1,
+      //     totalAmount: {
+      //       $round: ["$totalAmount", 2],
+      //     },
+      //   },
+      // },
+    ]).exec();
+    console.log("results--->", results);
+    // Create an array of objects representing each day of the current week
+
+    const currentDate = moment().startOf("week");
+
+    for (let i = 0; i < 7; i++) {
+      const date = currentDate.format("YYYY-MM-DD");
+      const dayOfWeek = new Intl.DateTimeFormat("en-US", {
+        weekday: "short",
+      }).format(new Date(date));
+      const orders = results.find((result) => result.date === date);
+      const count = orders ? orders.count : 0;
+      const totalAmount = orders ? orders.totalAmount : 0; // Divide by 100 to get the total amount in dollars
+
+      weeklyOrderChart.push({
+        date: date,
+        count: count,
+        totalAmount: totalAmount,
+        day: dayOfWeek,
+      });
+
+      currentDate.add(1, "day");
+    }
+
+    // Do something with the currentWeek array
+    console.log("Inside", weeklyOrderChart);
+    console.log("outside---->", weeklyOrderChart);
+    ////////////
+
     res.json({
       ordersInfo: {
         todayTotal,
@@ -75,6 +172,7 @@ exports.getDashboardBriefs = async (req, res) => {
         allTimeOrdersNumber,
         // uncompletedTotal,
         uncompletedNumber,
+        weeklyOrderChart,
       },
       usersInfo: { customersTotal, staffTotal, adminsTotal },
       menuInfo: { dishesTotal, drinksTotal },
