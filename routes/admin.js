@@ -15,6 +15,7 @@ const {
   getAllOrders,
   getUsers,
   updateUser,
+  getRevenueChartData,
 } = require("../controllers/admin");
 
 router.post(
@@ -23,6 +24,13 @@ router.post(
   adminCheck,
   getDashboardBriefs
 );
+router.post(
+  "/admin/revenue-chart-data",
+  authCheck,
+  adminCheck,
+  getRevenueChartData
+);
+
 router.post("/admin/upload-dish-image", authCheck, adminCheck, uploadDishImage);
 router.post("/admin/create-menu", authCheck, adminCheck, createMenu);
 router.post("/admin/get-dish-subs", authCheck, adminCheck, getDishSubs);

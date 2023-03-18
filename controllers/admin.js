@@ -30,23 +30,6 @@ exports.getDashboardBriefs = async (req, res) => {
       return acc + order.paymentIntent.amount / 100;
     }, 0);
 
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0); // Set time to start of the day
-
-    // const todayTotal = await Order.aggregate([
-    //   {
-    //     $match: {
-    //       createdAt: { $gte: today },
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: null,
-    //       totalAmount: { $sum: "$totalAmount" },
-    //     },
-    //   },
-    // ]).exec();
-
     const allTimeOrders = await Order.find().exec();
     const allTimeTotal = allTimeOrders.reduce((acc, order) => {
       return acc + order.paymentIntent.amount / 100;
@@ -68,25 +51,56 @@ exports.getDashboardBriefs = async (req, res) => {
     const adminsTotal = await User.countDocuments({ role: "admin" }).exec();
     const dishesTotal = await Dish.countDocuments().exec();
     const drinksTotal = await Drink.countDocuments().exec();
-    // const todayReports = await Report.countDocuments().exec()
 
+    res.json({
+      ordersInfo: {
+        todayTotal,
+        todayOrdersNumber,
+        allTimeTotal,
+        allTimeOrdersNumber,
+        // uncompletedTotal,
+        uncompletedNumber,
+      },
+      usersInfo: { customersTotal, staffTotal, adminsTotal },
+      menuInfo: { dishesTotal, drinksTotal },
+      // reportsInfo:{todayReports}
+    });
+  } catch (error) {
+    console.log(error);
+    console.error(error);
+    return res.status(500).send("Error retrieving orders");
+  }
+};
+
+exports.getRevenueChartData = async (req, res) => {
+  try {
+    let startPeriod, endPeriod, days;
     //Get order chart info///////
 
-    // const startOfCurrentWeek = moment().startOf("week").toDate();
-    // const endOfCurrentWeek = moment().endOf("week").toDate();
-    const startOfPastSevenDays = moment()
-      .subtract(7, "days")
-      .startOf("day")
-      .toDate();
-    const endOfToday = moment().endOf("day").toDate();
-    let weeklyOrderChart = [];
+    switch (req.body.filter) {
+      case "7days":
+        startPeriod = moment().subtract(7, "days").startOf("day").toDate();
+        endPeriod = moment().endOf("day").toDate();
+        days = 7;
+        break;
+      case "1month":
+        startPeriod = moment().subtract(28, "days").startOf("day").toDate();
+        endPeriod = moment().endOf("day").toDate();
+        days = 28;
+        break;
+      default:
+        break;
+    }
+    console.log("filter--->", req.body);
+
+    let chartData = [];
     const results = await Order.aggregate([
       // Match orders within the current week
       {
         $match: {
           createdAt: {
-            $gte: startOfPastSevenDays,
-            $lte: endOfToday,
+            $gte: startPeriod,
+            $lte: endPeriod,
           },
         },
       },
@@ -124,23 +138,13 @@ exports.getDashboardBriefs = async (req, res) => {
           },
         },
       },
-      // Round totalAmount to 2 decimal places
-      // {
-      //   $project: {
-      //     date: 1,
-      //     count: 1,
-      //     totalAmount: {
-      //       $round: ["$totalAmount", 2],
-      //     },
-      //   },
-      // },
     ]).exec();
     console.log("results--->", results);
     // Create an array of objects representing each day of the current week
 
     const currentDate = moment().startOf("week");
 
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < days; i++) {
       const date = currentDate.format("YYYY-MM-DD");
       const dayOfWeek = new Intl.DateTimeFormat("en-US", {
         weekday: "short",
@@ -149,7 +153,7 @@ exports.getDashboardBriefs = async (req, res) => {
       const count = orders ? orders.count : 0;
       const totalAmount = orders ? orders.totalAmount : 0; // Divide by 100 to get the total amount in dollars
 
-      weeklyOrderChart.push({
+      chartData.push({
         date: date,
         count: count,
         totalAmount: totalAmount,
@@ -160,28 +164,12 @@ exports.getDashboardBriefs = async (req, res) => {
     }
 
     // Do something with the currentWeek array
-    console.log("Inside", weeklyOrderChart);
-    console.log("outside---->", weeklyOrderChart);
-    ////////////
-
-    res.json({
-      ordersInfo: {
-        todayTotal,
-        todayOrdersNumber,
-        allTimeTotal,
-        allTimeOrdersNumber,
-        // uncompletedTotal,
-        uncompletedNumber,
-        weeklyOrderChart,
-      },
-      usersInfo: { customersTotal, staffTotal, adminsTotal },
-      menuInfo: { dishesTotal, drinksTotal },
-      // reportsInfo:{todayReports}
-    });
+    console.log("Inside", chartData);
+    res.json(chartData);
   } catch (error) {
     console.log(error);
     console.error(error);
-    return res.status(500).send("Error retrieving orders");
+    return res.status(500).send("Error chart data");
   }
 };
 
