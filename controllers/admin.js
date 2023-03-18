@@ -246,6 +246,7 @@ exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
       .populate("orderedBy")
+      .populate("processedBy.userId")
       .sort([["createdAt", "asc"]])
       .exec();
     res.json(orders);

@@ -35,6 +35,25 @@ const orderSchema = new mongoose.Schema(
       default: "processing",
       enum: ["processing", "dispatched", "cancelled", "completed"],
     },
+    processedBy: [
+      {
+        userId: {
+          type: ObjectId,
+          ref: "User",
+          required: true,
+        },
+        processedAt: {
+          type: Date,
+          default: Date.now(),
+          required: true,
+        },
+        action: {
+          type: String,
+          enum: ["processing", "dispatched", "completed", "canceled"],
+          required: true,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );
