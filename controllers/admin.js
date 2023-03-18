@@ -108,9 +108,9 @@ exports.getRevenueChartData = async (req, res) => {
       {
         $group: {
           _id: {
-            year: { $year: "$createdAt" },
-            month: { $month: "$createdAt" },
             day: { $dayOfMonth: "$createdAt" },
+            month: { $month: "$createdAt" },
+            year: { $year: "$createdAt" },
           },
           count: { $sum: 1 },
           totalAmount: { $sum: "$paymentIntent.amount" },
@@ -122,12 +122,12 @@ exports.getRevenueChartData = async (req, res) => {
           _id: 0,
           date: {
             $dateToString: {
-              format: "%Y-%m-%d",
+              format: "%d-%m-%Y",
               date: {
                 $dateFromParts: {
-                  year: "$_id.year",
-                  month: "$_id.month",
                   day: "$_id.day",
+                  month: "$_id.month",
+                  year: "$_id.year",
                 },
               },
             },
@@ -145,7 +145,7 @@ exports.getRevenueChartData = async (req, res) => {
     const currentDate = moment().startOf("week");
 
     for (let i = 0; i < days; i++) {
-      const date = currentDate.format("YYYY-MM-DD");
+      const date = currentDate.format("DD-MM-YYYY");
       const dayOfWeek = new Intl.DateTimeFormat("en-US", {
         weekday: "short",
       }).format(new Date(date));
