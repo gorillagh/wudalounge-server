@@ -108,9 +108,9 @@ exports.getRevenueChartData = async (req, res) => {
       {
         $group: {
           _id: {
-            day: { $dayOfMonth: "$createdAt" },
-            month: { $month: "$createdAt" },
             year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" },
+            day: { $dayOfMonth: "$createdAt" },
           },
           count: { $sum: 1 },
           totalAmount: { $sum: "$paymentIntent.amount" },
@@ -125,9 +125,9 @@ exports.getRevenueChartData = async (req, res) => {
               format: "%d-%m-%Y",
               date: {
                 $dateFromParts: {
-                  day: "$_id.day",
-                  month: "$_id.month",
                   year: "$_id.year",
+                  month: "$_id.month",
+                  day: "$_id.day",
                 },
               },
             },
@@ -146,9 +146,8 @@ exports.getRevenueChartData = async (req, res) => {
 
     for (let i = 0; i < days; i++) {
       const date = currentDate.format("DD-MM-YYYY");
-      const dayOfWeek = new Intl.DateTimeFormat("en-US", {
-        weekday: "short",
-      }).format(new Date(date));
+      console.log("newdate===>", date);
+      const dayOfWeek = currentDate.format("ddd");
       const orders = results.find((result) => result.date === date);
       const count = orders ? orders.count : 0;
       const totalAmount = orders ? orders.totalAmount : 0; // Divide by 100 to get the total amount in dollars
