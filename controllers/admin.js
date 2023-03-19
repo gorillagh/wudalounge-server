@@ -142,7 +142,7 @@ exports.getRevenueChartData = async (req, res) => {
     console.log("results--->", results);
     // Create an array of objects representing each day of the current week
 
-    const currentDate = moment().startOf("week");
+    const currentDate = moment().subtract(days - 1, "days");
 
     for (let i = 0; i < days; i++) {
       const date = currentDate.format("DD-MM-YYYY");
@@ -150,7 +150,7 @@ exports.getRevenueChartData = async (req, res) => {
       const dayOfWeek = currentDate.format("ddd");
       const orders = results.find((result) => result.date === date);
       const count = orders ? orders.count : 0;
-      const totalAmount = orders ? orders.totalAmount : 0; // Divide by 100 to get the total amount in dollars
+      const totalAmount = orders ? orders.totalAmount : 0;
 
       chartData.push({
         date: date,
@@ -247,7 +247,7 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Order.find()
       .populate("orderedBy")
       .populate("processedBy.userId")
-      .sort([["createdAt", "asc"]])
+      .sort([["createdAt", "desc"]])
       .exec();
     res.json(orders);
   } catch (error) {
