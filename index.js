@@ -28,7 +28,7 @@ mongoose
 //Middlewares
 app.use(
   cors({
-    origin: "https://wudalounge.com",
+    origin: "*",
   })
 );
 app.use(morgan("tiny"));
