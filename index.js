@@ -5,6 +5,9 @@ const mongoose = require("mongoose");
 const { readdirSync } = require("fs");
 require("dotenv").config();
 
+// Import the Socket.IO library
+const socketIo = require("socket.io");
+
 //App
 const app = express();
 const port = process.env.PORT || 8000;
@@ -31,6 +34,32 @@ app.use(express.urlencoded({ limit: "6000mb", extended: true })); //Parse URL-en
 //Routes Middleware
 readdirSync("./routes").map((r) => app.use("/api", require("./routes/" + r)));
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Wuda Lounge server is running at http://localhost:${port}`);
 });
+
+//Socket.IO setup
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "https://wudalounge-server.vercel.app", //Allow requests from this origin
+    methods: ["GET", "POST"],
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log(`Socket connected: ${socket.id}`);
+
+  //Listen for new order events from the client
+  socket.on("newOrder", (data) => {
+    console.log(`New order received: ${JSON.stringify(data)}`);
+    //Broadcast the new order to all connected clients
+    io.emit("newOrder", data);
+  });
+
+  //Disconnect event
+  socket.on("disconnect", () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+  });
+});
+
+module.exports = { server, io };

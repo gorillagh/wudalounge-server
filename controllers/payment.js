@@ -5,6 +5,9 @@ const discount = 0.5;
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
 
+const socketIo = require("socket.io-client");
+const io = socketIo("https://wudalounge-server.vercel.app");
+
 exports.createPayment = async (req, res) => {
   try {
     let total = 0;
@@ -230,6 +233,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
+      io.emit("newOrder", newOrder);
       await sendSMS(phoneNumber, totalAfterDiscount, reference, paymentMethod);
 
       res.json("Order placed");
