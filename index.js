@@ -41,7 +41,7 @@ const server = app.listen(port, () => {
 //Socket.IO setup
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://wudalounge-server.vercel.app", //Allow requests from this origin
+    origin: "https://www.wudalounge.com/", //Allow requests from this origin
     methods: ["GET", "POST"],
   },
 });
