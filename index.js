@@ -29,6 +29,7 @@ mongoose
 app.use(
   cors({
     origin: "*",
+    methods: ["GET", "POST"],
   })
 );
 
@@ -46,7 +47,7 @@ const server = app.listen(port, () => {
 //Socket.IO setup
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://www.wudalounge.com", //Allow requests from this origin
+    origin: "*",
     methods: ["GET", "POST"],
   },
 });
