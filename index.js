@@ -5,6 +5,12 @@ const mongoose = require("mongoose");
 const { readdirSync } = require("fs");
 require("dotenv").config();
 
+const Ably = require("ably");
+
+const ably = new Ably.Realtime(
+  "zf8B2g.wMJo6A:LwzPC8P-GKVvbKkE9cJFKf0TA1hByQWu4zwSZ9iVBOs"
+);
+
 // Import the Socket.IO library
 const socketIo = require("socket.io");
 
@@ -59,6 +65,8 @@ io.on("connection", (socket) => {
   socket.on("newOrder", (data) => {
     console.log(`New order received: ${JSON.stringify(data)}`);
     //Broadcast the new order to all connected clients
+    const channel = ably.channels.get("newOrder");
+    channel.publish("newOrder", data);
     io.emit("newOrder", data);
   });
 
