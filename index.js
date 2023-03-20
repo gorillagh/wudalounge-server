@@ -31,6 +31,11 @@ app.use(
     origin: "*",
   })
 );
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://www.wudalounge.com");
+  res.header("Access-Control-Allow-Methods", "GET, POST");
+  next();
+});
 app.use(morgan("tiny"));
 app.use(express.json({ limit: "6000mb" })); //Used to parse JSON bodies
 app.use(express.urlencoded({ limit: "6000mb", extended: true })); //Parse URL-encoded bodies
