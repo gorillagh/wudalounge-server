@@ -41,7 +41,7 @@ const server = app.listen(port, () => {
 //Socket.IO setup
 const io = require("socket.io")(server, {
   cors: {
-    origin: "https://www.wudalounge.com/", //Allow requests from this origin
+    origin: "http://localhost:3000", //Allow requests from this origin
     methods: ["GET", "POST"],
   },
 });

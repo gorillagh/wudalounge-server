@@ -6,7 +6,7 @@ const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
 
 const socketIo = require("socket.io-client");
-const io = socketIo("https://wudalounge-server.vercel.app");
+const io = socketIo("http://localhost:8000");
 
 exports.createPayment = async (req, res) => {
   try {
