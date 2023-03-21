@@ -5,8 +5,18 @@ const discount = 0.5;
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
 
-const socketIo = require("socket.io-client");
-const io = socketIo("http://localhost:8000");
+const Pusher = require("pusher");
+
+const pusher = new Pusher({
+  appId: "1571752",
+  key: "868cc58cabbb7ae7406e",
+  secret: "f5a6dc8a676235a85727",
+  cluster: "mt1",
+  useTLS: true,
+});
+
+// const socketIo = require("socket.io-client");
+// const io = socketIo("http://localhost:8000");
 
 exports.createPayment = async (req, res) => {
   try {
@@ -233,7 +243,8 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
-      io.emit("newOrder", newOrder);
+      // io.emit("newOrder", newOrder);
+      pusher.trigger("newOrder", "order-placed", newOrder);
       await sendSMS(phoneNumber, totalAfterDiscount, reference, paymentMethod);
 
       res.json("Order placed");
