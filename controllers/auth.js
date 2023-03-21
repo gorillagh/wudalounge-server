@@ -109,6 +109,20 @@ exports.currentAdmin = async (req, res) => {
   }
 };
 
+exports.currentStaff = async (req, res) => {
+  try {
+    User.findOne({ email: req.user.email }).exec((err, user) => {
+      if (err) throw new Error(err);
+      else {
+        console.log("Dbuser---->", user);
+        res.json(user);
+      }
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.updateUser = async (req, res) => {
   const _id = req.params.slug;
   try {
