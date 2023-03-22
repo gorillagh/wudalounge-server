@@ -15,9 +15,6 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
-// const socketIo = require("socket.io-client");
-// const io = socketIo("http://localhost:8000");
-
 exports.createPayment = async (req, res) => {
   try {
     let total = 0;
@@ -59,76 +56,6 @@ exports.createPayment = async (req, res) => {
     console.log(error);
   }
 };
-
-///////Send SMS to customer /////
-// const sendSMS = async (phoneNumber, total, orderId) => {
-//   const from = "Wuda Lounge";
-//   // const to = "233240298910";
-//   const to = phoneNumber;
-//   const text = `Order successful. total: GHC${total}. Order Id: ${orderId} Thanks for choosing Wuda Lounge`;
-//   await vonage.sms
-//     .send({ to, from, text })
-//     .then((resp) => {
-//       console.log("Message sent successfully");
-//       console.log(resp);
-//     })
-//     .catch((err) => {
-//       console.log("There was an error sending the messages.");
-//       console.error(err);
-//     });
-// };
-
-///////Send SMS to admin//////
-// const sendAdminSMS = async (phoneNumber, total, orderId) => {
-//   const from = "Wuda Lounge";
-//   const to = "233240298910";
-//   const text = `Order received total: GHC${total}. Id: ${orderId} from: ${phoneNumber}`;
-//   await vonage.sms
-//     .send({ to, from, text })
-//     .then((resp) => {
-//       console.log("Message sent successfully");
-//       console.log(resp);
-//     })
-//     .catch((err) => {
-//       console.log("There was an error sending the messages.");
-//       console.error(err);
-//     });
-// };
-
-//////SPLIT SMS///////////////////////////
-// const sendSMS = async (phoneNumber, total, reference) => {
-//   const userResponse = await axios.post(
-//     `http://app.splitsms.com/smsapi?key=${
-//       process.env.SPLITSMS_API_KEY
-//     }&to=0${phoneNumber.slice(
-//       -9
-//     )}&msg=Order successful. total: GHC${total}. Order Id: ${reference}. Please go to your dashboard to view order details. Thanks for choosing Wuda Lounge&sender_id=Wuda Lounge`,
-//     {
-//       headers: {
-//         "content-type": "application/x-www-form-urlencoded",
-//       },
-//     }
-//   );
-//   const adminResponse = await axios.post(
-//     `http://app.splitsms.com/smsapi?key=${process.env.SPLITSMS_API_KEY}&to=0240298910&msg=Order received total: GHC${total}. Id: ${reference} from: ${phoneNumber}&sender_id=Wuda Lounge`,
-//     {
-//       headers: {
-//         "content-type": "application/x-www-form-urlencoded",
-//       },
-//     }
-//   );
-
-//   console.log(
-//     "Sent to user response====>",
-//     userResponse.data,
-//     userResponse.status
-//   );
-//   console.log(
-//     "Sent to admin response====>",
-//     adminResponse.data,
-//     adminResponse.status
-//   );
-// };
 
 const sendSMS = async (phoneNumber, total, reference, paymentMethod) => {
   const customerData = {
@@ -243,7 +170,6 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
           channel: "cash",
         },
       }).save();
-      // io.emit("newOrder", newOrder);
       pusher.trigger("newOrder", "order-placed", newOrder);
       await sendSMS(phoneNumber, totalAfterDiscount, reference, paymentMethod);
 
