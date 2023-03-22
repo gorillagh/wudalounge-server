@@ -8,10 +8,10 @@ const crypto = require("crypto");
 const Pusher = require("pusher");
 
 const pusher = new Pusher({
-  appId: "1571752",
-  key: "868cc58cabbb7ae7406e",
-  secret: "f5a6dc8a676235a85727",
-  cluster: "mt1",
+  appId: process.env.PUSHER_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
   useTLS: true,
 });
 
@@ -284,6 +284,7 @@ exports.verifyTransactionAndCreateOrder = async (req, res) => {
         notes,
         paymentIntent: verifiedTransaction.data.data,
       }).save();
+      pusher.trigger("newOrder", "order-placed", newOrder);
 
       ////(splitsms)//////
       await sendSMS(
@@ -345,6 +346,8 @@ exports.handleWebhook = async (req, res) => {
             },
           }).save();
           console.log("Stack ORDER SAVED----->>", newOrder);
+          pusher.trigger("newOrder", "order-placed", newOrder);
+
           await sendSMS(
             phoneNumber,
             event.data.amount / 100,
