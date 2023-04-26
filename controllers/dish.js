@@ -7,7 +7,7 @@ const cloudinary = require("cloudinary").v2;
 
 exports.getDishes = async (req, res) => {
   try {
-    const dishes = await Dish.find()
+    const dishes = await Dish.find({ restaurant: req.body.restaurant })
       .populate("category")
       .populate("extras")
       .populate("subcategories")

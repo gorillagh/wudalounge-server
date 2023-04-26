@@ -8,5 +8,5 @@ const { authCheck, adminCheck } = require("../middlewares/auth");
 //Controllers
 const { getDishes } = require("../controllers/dish");
 
-router.get("/dishes", getDishes);
+router.post("/dishes", getDishes);
 module.exports = router;

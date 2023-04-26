@@ -4,6 +4,7 @@ const { ObjectId } = Schema;
 
 const dishSchema = new Schema(
   {
+    restaurant: { type: String, required: true },
     image: {
       type: String,
       required: true,
