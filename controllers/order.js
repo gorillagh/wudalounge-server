@@ -9,6 +9,16 @@ const { v4: uuid } = require("uuid");
 const cloudinary = require("cloudinary").v2;
 const slugify = require("slugify");
 
+const Pusher = require("pusher");
+
+const pusher = new Pusher({
+  appId: process.env.PUSHER_ID,
+  key: process.env.PUSHER_KEY,
+  secret: process.env.PUSHER_SECRET,
+  cluster: process.env.PUSHER_CLUSTER,
+  useTLS: true,
+});
+
 exports.updateOrder = async (req, res) => {
   try {
     const updatedOrder = await Order.findOneAndUpdate(
@@ -18,6 +28,8 @@ exports.updateOrder = async (req, res) => {
         new: true,
       }
     ).exec();
+    pusher.trigger("orderUpdate", "order-updated", updatedOrder);
+
     res.json("ok");
   } catch (error) {
     console.log(error);
