@@ -19,6 +19,61 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
+const sendSMS = async (phoneNumber, reference) => {
+  const customerData = {
+    recipient: [`0${phoneNumber.slice(-9)}`],
+    sender: "Wudalounge",
+    message: `Order successfully delivered! Order Id: ${reference.slice(
+      -9
+    )}. Thanks for choosing Wuda Lounge.`,
+
+    is_schedule: "false",
+    schedule_date: "",
+  };
+  const adminData = {
+    recipient: ["0240298910"],
+    sender: "Wudalounge",
+    message: `Order delivered. Id: ${reference.slice(-9)}.`,
+    is_schedule: "false",
+    schedule_date: "",
+  };
+  const headers = {
+    "content-type": "application/x-www-form-urlencoded",
+    Accept: "application/json",
+  };
+
+  try {
+    ///send to customer
+    const customerResponse = await axios.post(
+      `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
+      customerData,
+      {
+        headers,
+      }
+    );
+    ///Send to admin
+    const adminResponse = await axios.post(
+      `https://api.mnotify.com/api/sms/quick?key=${process.env.MNOTIFY_API_KEY}`,
+      adminData,
+      {
+        headers,
+      }
+    );
+    console.log(
+      "Sent to user response====>",
+      customerResponse.data,
+      customerResponse.data
+    );
+    console.log(
+      "Sent to admin response====>",
+      adminResponse.data,
+      adminResponse.data
+    );
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.updateOrder = async (req, res) => {
   try {
     const updatedOrder = await Order.findOneAndUpdate(
@@ -28,6 +83,9 @@ exports.updateOrder = async (req, res) => {
         new: true,
       }
     ).exec();
+    if (updatedOrder.orderStatus === "completed") {
+      await sendSMS(updatedOrder.phoneNumber, updatedOrder.reference);
+    }
     pusher.trigger("orderUpdate", "order-updated", updatedOrder);
 
     res.json("ok");
