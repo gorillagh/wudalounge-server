@@ -8,6 +8,7 @@ const Subcategory = require("../models/SubCategory");
 const { v4: uuid } = require("uuid");
 const cloudinary = require("cloudinary").v2;
 const slugify = require("slugify");
+const axios = require("axios");
 
 const Pusher = require("pusher");
 
@@ -23,9 +24,9 @@ const sendSMS = async (phoneNumber, reference) => {
   const customerData = {
     recipient: [`0${phoneNumber.slice(-9)}`],
     sender: "Wudalounge",
-    message: `Order successfully delivered! Order Id: ${reference.slice(
+    message: `Your order (Id: ${reference.slice(
       -9
-    )}. Thanks for choosing Wuda Lounge.`,
+    )}) has been delivered! Enjoy your meal and thanks for choosing Wuda Lounge!`,
 
     is_schedule: "false",
     schedule_date: "",
