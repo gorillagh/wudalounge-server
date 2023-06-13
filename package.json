@@ -3,9 +3,7 @@
   "version": "1.0.0",
   "description": "food delivery",
   "main": "index.js",
-  "engines": {
-    "node": "19.x"
-  },
+  
   "scripts": {
     "start": "nodemon index.js"
   },
