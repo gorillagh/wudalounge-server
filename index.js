@@ -25,7 +25,7 @@ mongoose
 //Middlewares
 app.use(
   cors({
-    origin: "https://pmms.vercel.app",
+    origin: "*",
     methods: ["GET", "POST"],
   })
 );
